@@ -2,10 +2,10 @@ import csv
 import fnmatch
 import os
 import sys
-import urllib.request
-import urllib.parse
+import requests
 from dotenv import load_dotenv
 import tkinter
+
 load_dotenv()
 DEV_KEY = os.getenv("DEV_KEY")
 
@@ -35,19 +35,14 @@ with open(csv_path, 'r') as csv_file:  # , open("./filesay.txt", 'w') as filesay
 
 # Create pastebin
 url = "https://pastebin.com/api/api_post.php"
-values={
+values = {
     'api_dev_key': DEV_KEY,
     "api_option": "paste",
     "api_paste_code": result,
-    "api_paste_expire_date": "1D",
-    "api_paste_private": "1"
+    "api_paste_expire_date": "1D"
 }
 
-data = urllib.parse.urlencode(values)
-data = data.encode("UTF-8")
+response = requests.post(url, values)
 
-request = urllib.request.Request(url, data, method="POST")
-response = urllib.request.urlopen(request)
-response_data = response.read().decode()
 
-print(response_data)
+print(response.text)
