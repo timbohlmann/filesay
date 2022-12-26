@@ -2,10 +2,10 @@ import csv
 import fnmatch
 import os
 import sys
-import tkinter
-from pastebin import PastebinAPI
+import urllib.request
+import urllib.parse
 from dotenv import load_dotenv
-
+import tkinter
 load_dotenv()
 DEV_KEY = os.getenv("DEV_KEY")
 
@@ -24,7 +24,7 @@ if csv_path == "":
 
 
 # Extract usernames from csv
-with open(csv_path, 'r') as csv_file, open("./filesay.txt", 'w') as filesay:
+with open(csv_path, 'r') as csv_file:  # , open("./filesay.txt", 'w') as filesay:
     csv_reader = csv.reader(csv_file, delimiter=','); 
     line_index = 0; 
     for row in csv_reader:
@@ -34,4 +34,20 @@ with open(csv_path, 'r') as csv_file, open("./filesay.txt", 'w') as filesay:
         line_index = line_index + 1
 
 # Create pastebin
-print("Created filesay textfile.")
+url = "https://pastebin.com/api/api_post.php"
+values={
+    'api_dev_key': DEV_KEY,
+    "api_option": "paste",
+    "api_paste_code": result,
+    "api_paste_expire_date": "1D",
+    "api_paste_private": "1"
+}
+
+data = urllib.parse.urlencode(values)
+data = data.encode("UTF-8")
+
+request = urllib.request.Request(url, data, method="POST")
+response = urllib.request.urlopen(request)
+response_data = response.read().decode()
+
+print(response_data)
