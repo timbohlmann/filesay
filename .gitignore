@@ -1,2 +1,7 @@
 output
 __pycache__
+*.csv
+*.xml
+*.iml
+.env
+
