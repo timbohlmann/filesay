@@ -15,7 +15,4 @@ def paste(paste_string):
         "api_paste_expire_date": "1D"
     }
     response = requests.post(url, values)
-    #if response.status_code == 422:
-       # return "Post Limit reached!"
-   # print(response.text)
     return response.text

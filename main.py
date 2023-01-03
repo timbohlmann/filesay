@@ -4,14 +4,13 @@ from tkinter import ttk
 import os
 import csv_parser
 import pastebin
-#import settings
 from dotenv import load_dotenv, set_key
-
-#from settings import Settings
+import configparser
 
 load_dotenv()
-#DEV_KEY = os.getenv("DEV_KEY")
 
+config = configparser.ConfigParser()
+config.read("config.ini")
 
 
 root = tkinter.Tk()
@@ -20,42 +19,99 @@ file_path = ""
 file_name = tkinter.StringVar()
 pastebin_link = tkinter.StringVar()
 ban_reason = tkinter.StringVar()
-test_mode = tkinter.BooleanVar()
-#print(os.getenv("DEV_KEY"))
-dev_key_displayed = tkinter.StringVar(root, value=os.getenv("DEV_KEY"))
-#DEV_KEY = os.getenv("DEV_KEY")
-#if DEV_KEY is None:
-   # dev_key_displayed.set("")
-#else:
-   # dev_key_displayed.set(DEV_KEY)
+test_mode = tkinter.BooleanVar(root, value=config["settings"]["testmode"])
+dark_mode = tkinter.BooleanVar(root, value=config["settings"]["darkmode"])
+prefix = tkinter.BooleanVar(root, value=config["settings"]["prefix"])
+key_visible = tkinter.BooleanVar(root, False)
+dev_key = tkinter.StringVar(root, value=os.getenv("DEV_KEY"))
+TEST_MODE_MESSAGE = "Test Mode is active!"
 
 
 def save_settings():
-    if dev_key_displayed.get() != os.getenv("DEV_KEY"):
-        set_key(dotenv_path=".env", key_to_set="DEV_KEY", value_to_set=dev_key_displayed.get())
-        #load_dotenv()
-        os.environ["DEV_KEY"] = dev_key_displayed.get()
-    print("test" + os.getenv("DEV_KEY"))
+    if dev_key.get() != os.getenv("DEV_KEY"):
+        set_key(dotenv_path=".env", key_to_set="DEV_KEY", value_to_set=dev_key.get())
+        os.environ["DEV_KEY"] = dev_key.get()
+
+    toggle_test_mode()
+    toggle_dark_mode()
+    toggle_prefix()
+
+    with open('config.ini', 'w') as config_file:
+        config.write(config_file)
+
+
+def toggle_entry_visibility(entry: ttk.Entry):
+    if key_visible.get():
+        entry.config(show="")
+    else:
+        entry.config(show="*")
+
+
+def toggle_prefix():
+    if prefix.get():
+        config["settings"]["prefix"] = "on"
+    else:
+        config["settings"]["prefix"] = "off"
+
+
+def toggle_test_mode():
+    if test_mode.get():
+        config["settings"]["testmode"] = "on"
+    else:
+        config["settings"]["testmode"] = "off"
+
+
+def toggle_dark_mode():
+    if dark_mode.get():
+        config["settings"]["darkmode"] = "on"
+        root.tk.call("set_theme", "dark")
+    else:
+        config["settings"]["darkmode"] = "off"
+        root.tk.call("set_theme", "light")
+
 
 def open_settings():
     settings = tkinter.Toplevel()
     settings.title("Settings")
     settings.focus_set()
+    settings.resizable(False, False)
 
     key_label = ttk.Label(settings, text="api_dev_key:")
-    key_label.grid(row=0, column=0, padx=5, pady=5)
+    key_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-    key_entry = ttk.Entry(settings, width=35, textvariable=dev_key_displayed)
-    #key_entry.insert(index=0, string=DEV_KEY)
+    key_entry = ttk.Entry(settings, width=31, textvariable=dev_key, show="*")
     key_entry.grid(row=0, column=1, pady=5, padx=5)
 
-    testmode_checkbox = ttk.Checkbutton()
+    key_visible_checkbox = ttk.Checkbutton(settings, style='Switch.TCheckbutton', variable=key_visible,
+                                           command=lambda: toggle_entry_visibility(key_entry))
+    key_visible_checkbox.grid(row=0, column=2, padx=5)
 
-    save_button = ttk.Button(settings, text="Save", command=save_settings)
-    save_button.grid(row=2, column=1, sticky="e", padx=5, pady=5)
+    test_mode_label = ttk.Label(settings, text="Test Mode:")
+    test_mode_label.grid(row=1, column=0, sticky="w", padx=5)
 
-    # settings.geometry("200x200")
+    test_mode.set(config["settings"]["testmode"])
+    test_mode_checkbox = ttk.Checkbutton(settings, style='Switch.TCheckbutton', variable=test_mode)
+    test_mode_checkbox.grid(row=1, column=1, padx=5, sticky="w")
+
+    dark_mode_label = ttk.Label(settings, text="Dark Mode:")
+    dark_mode_label.grid(row=2, column=0, sticky="w", padx=5)
+
+    dark_mode.set(config["settings"]["darkmode"])
+    dark_mode_checkbox = ttk.Checkbutton(settings, style='Switch.TCheckbutton', variable=dark_mode)
+    dark_mode_checkbox.grid(row=2, column=1, padx=5, sticky="w")
+
+    prefix_label = ttk.Label(settings, text="!filesay Prefix:")
+    prefix_label.grid(row=3, column=0, sticky="w", padx=5)
+
+    prefix.set(config["settings"]["prefix"])
+    prefix_checkbox = ttk.Checkbutton(settings, style='Switch.TCheckbutton', variable=prefix)
+    prefix_checkbox.grid(row=3, column=1, padx=5, sticky="w")
+
+    save_button = ttk.Button(settings, text="Save", width=5, command=save_settings)
+    save_button.grid(row=4, column=2, sticky="e", padx=5, pady=5)
+
     settings.mainloop()
+
 
 def open_file():
     global file_path
@@ -66,20 +122,20 @@ def open_file():
 
 def generate_link():
     if file_path != "":
-        link = ""
         filesay = csv_parser.parse(file_path, ban_reason.get())
-        print(test_mode.get())
         if test_mode.get():
-            pastebin_link.set("Test Mode is active!")
+            pastebin_link.set(TEST_MODE_MESSAGE)
             print(filesay)
         else:
-            link = pastebin.paste(filesay)
-
-        pastebin_link.set(link)
+            if prefix:
+                pastebin_link.set("!filesay " + pastebin.paste(filesay))
+            else:
+                pastebin_link.set(pastebin.paste(filesay))
 
 
 def copy_link():
-    if pastebin_link.get() != "":
+    if pastebin_link.get() != "" and pastebin_link.get() != TEST_MODE_MESSAGE:
+        root.clipboard_clear()
         root.clipboard_append(pastebin_link.get())
 
 
@@ -89,18 +145,11 @@ def main():
     root.columnconfigure(0, weight=1)
     root.columnconfigure(1, weight=1)
 
-    # MENU ############
-
-    menu = tkinter.Menu(root)
-    root.config(menu=menu)
-    file_menu = tkinter.Menu(menu, tearoff=0)
-    menu.add_cascade(label="File", menu=file_menu)
-    file_menu.add_command(label="Settings", command=open_settings)
-    file_menu.add_checkbutton(label="Test Mode", variable=test_mode)
-    file_menu.add_command(label="Exit", command=quit)
-
-    #settings_button = ttk.Button(text="Set", command=open_settings)
-    #settings_button.grid(row=0, column=0, sticky="e", padx=5)
+    root.tk.call("source", "Azure-ttk-theme-2.1.0/azure.tcl")
+    if dark_mode.get():
+        root.tk.call("set_theme", "dark")
+    else:
+        root.tk.call("set_theme", "light")
 
     # UPPER LABELFRAME ############
 
@@ -119,7 +168,7 @@ def main():
 
     # LOWER LABELFRAME ##############
 
-    labelframe2 = ttk.LabelFrame(text="Pastebin Link:")
+    labelframe2 = ttk.LabelFrame(text="Pastebin:")
     labelframe2.grid(row=3, column=0, padx=5, pady=5, sticky="we")
     labelframe2.columnconfigure(1, weight=1)
 
@@ -133,7 +182,6 @@ def main():
     copy_btn.grid(row=0, column=2, pady=5, padx=5, sticky="e")
 
     # MIDDLE FRAME ################
-
     frame1 = ttk.Frame()
     frame1.grid(row=2, column=0)
 
@@ -144,7 +192,10 @@ def main():
     generate_btn.grid(row=0, column=2, pady=5, padx=5, sticky="we")
 
     reason_entry = ttk.Entry(frame1, textvariable=ban_reason)
-    reason_entry.grid(row=0, column=1)
+    reason_entry.grid(row=0, column=1, padx=5)
+
+    settings_button = ttk.Button(frame1, text="Settings", command=open_settings, width=7)
+    settings_button.grid(row=0, column=3, padx=5, pady=5)
 
     root.mainloop()
 

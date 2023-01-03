@@ -3,7 +3,7 @@ import csv
 
 def parse(csv_path, ban_reason):
     result = ""
-    with open(csv_path, 'r') as csv_file:  # , open("./filesay.txt", 'w') as filesay:
+    with open(csv_path, 'r') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',');
         line_index = 0
         for row in csv_reader:
