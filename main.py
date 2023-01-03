@@ -153,49 +153,50 @@ def main():
 
     # UPPER LABELFRAME ############
 
-    labelframe1 = ttk.LabelFrame(text="Select File: ")
-    labelframe1.grid(row=1, column=0, padx=5, pady=5, sticky="we")
-    labelframe1.columnconfigure(1, weight=1)
+    upper_frame = ttk.LabelFrame(text="Select File: ")
+    upper_frame.grid(row=1, column=0, padx=5, pady=5, sticky="we")
+    upper_frame.columnconfigure(1, weight=1)
 
-    file_label1 = ttk.Label(labelframe1, text="Filename:", width=10)
+    file_label1 = ttk.Label(upper_frame, text="Filename:", width=10)
     file_label1.grid(row=0, column=0, padx=5)
 
-    file_label2 = ttk.Label(labelframe1, textvariable=file_name, width=50)
+    file_label2 = ttk.Label(upper_frame, textvariable=file_name, width=50)
     file_label2.grid(row=0, column=1)
 
-    open_btn = ttk.Button(labelframe1, text="Open File", command=open_file)
+    open_btn = ttk.Button(upper_frame, text="Open File", command=open_file)
     open_btn.grid(row=0, column=2, pady=5, padx=5, sticky="e")
+
+    # MIDDLE FRAME ################
+
+    middle_frame = ttk.Frame()
+    middle_frame.grid(row=2, column=0)
+
+    reason_label = ttk.Label(middle_frame, text="Ban Reason:")
+    reason_label.grid(row=0, column=0, padx=5)
+
+    reason_entry = ttk.Entry(middle_frame, textvariable=ban_reason)
+    reason_entry.grid(row=0, column=1, padx=5)
+
+    generate_btn = ttk.Button(middle_frame, text="Generate Link", command=generate_link)
+    generate_btn.grid(row=0, column=2, pady=5, padx=5, sticky="we")
+
+    settings_button = ttk.Button(middle_frame, text="Settings", command=open_settings, width=7)
+    settings_button.grid(row=0, column=3, padx=5, pady=5)
 
     # LOWER LABELFRAME ##############
 
-    labelframe2 = ttk.LabelFrame(text="Pastebin:")
-    labelframe2.grid(row=3, column=0, padx=5, pady=5, sticky="we")
-    labelframe2.columnconfigure(1, weight=1)
+    lower_frame = ttk.LabelFrame(text="Pastebin:")
+    lower_frame.grid(row=3, column=0, padx=5, pady=5, sticky="we")
+    lower_frame.columnconfigure(1, weight=1)
 
-    link_label = ttk.Label(labelframe2, text="Link:", width=10)
+    link_label = ttk.Label(lower_frame, text="Link:", width=10)
     link_label.grid(row=0, column=0, padx=5, pady=5)
 
-    link_label2 = ttk.Label(labelframe2, textvariable=pastebin_link, width=50)
+    link_label2 = ttk.Label(lower_frame, textvariable=pastebin_link, width=50)
     link_label2.grid(row=0, column=1)
 
-    copy_btn = ttk.Button(labelframe2, text="Copy", command=copy_link)
+    copy_btn = ttk.Button(lower_frame, text="Copy", command=copy_link)
     copy_btn.grid(row=0, column=2, pady=5, padx=5, sticky="e")
-
-    # MIDDLE FRAME ################
-    frame1 = ttk.Frame()
-    frame1.grid(row=2, column=0)
-
-    reason_label = ttk.Label(frame1, text="Ban Reason:")
-    reason_label.grid(row=0, column=0, padx=5)
-
-    generate_btn = ttk.Button(frame1, text="Generate Link", command=generate_link)
-    generate_btn.grid(row=0, column=2, pady=5, padx=5, sticky="we")
-
-    reason_entry = ttk.Entry(frame1, textvariable=ban_reason)
-    reason_entry.grid(row=0, column=1, padx=5)
-
-    settings_button = ttk.Button(frame1, text="Settings", command=open_settings, width=7)
-    settings_button.grid(row=0, column=3, padx=5, pady=5)
 
     root.mainloop()
 
