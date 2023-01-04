@@ -75,6 +75,7 @@ def open_settings():
     settings.title("Settings")
     settings.focus_set()
     settings.resizable(False, False)
+    dev_key.set(os.environ["DEV_KEY"])
 
     key_label = ttk.Label(settings, text="api_dev_key:")
     key_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
