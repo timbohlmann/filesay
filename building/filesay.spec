@@ -8,7 +8,7 @@ a = Analysis(
     ['..\main.py'],
     pathex=[],
     binaries=[],
-    datas=[('../config.ini', '.'), ('../fossa-icon.ico', '.'), ('../Azure-ttk-theme-2.1.0', 'Azure-ttk-theme-2.1.0')],
+    datas=[('../.env', '.'),('../config.ini', '.'), ('../fossa-icon.ico', '.'), ('../Azure-ttk-theme-2.1.0', 'Azure-ttk-theme-2.1.0')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
