@@ -1,10 +1,10 @@
 # filesay
 
-What is filesay?
+### What is filesay?
 This is a program to create a pastebin link for usage with bots like fossabot or streamlabs.
 You are able to switch to Dark Mode and Test Mode. It's also possible to activate a "!filesay" prefix for easier use with fossabot or other bots.
 
-How to use it
+### How to use it
 First of all you need to create a pastebin account if you dont have one already. Next step is to go to https://www.pastebin.com/doc_api and copy your Developer Api Key. You then need to paste that in the api_dev_key field in the settings.
 
 In the settings you can also enable Dark Mode, Test Mode and the whether or not the program should put "!filesay" before the pastebin link.
