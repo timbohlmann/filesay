@@ -82,6 +82,7 @@ def open_settings():
     key_entry = ttk.Entry(settings, width=31, textvariable=dev_key, show="*")
     key_entry.grid(row=0, column=1, pady=5, padx=5)
 
+    key_visible.set(False)
     key_visible_checkbox = ttk.Checkbutton(settings, style='Switch.TCheckbutton', variable=key_visible,
                                            command=lambda: toggle_entry_visibility(key_entry))
     key_visible_checkbox.grid(row=0, column=2, padx=5)
@@ -127,10 +128,12 @@ def generate_link():
             pastebin_link.set(TEST_MODE_MESSAGE)
             print(filesay)
         else:
-            if prefix:
-                pastebin_link.set("!filesay " + pastebin.paste(filesay))
+            response = pastebin.paste(filesay, dev_key.get())
+            if response.status_code == 200:
+                if prefix.get():
+                    pastebin_link.set("!filesay " + response.text)
             else:
-                pastebin_link.set(pastebin.paste(filesay))
+                pastebin_link.set(response.text)
 
 
 def copy_link():

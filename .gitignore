@@ -5,4 +5,8 @@ __pycache__
 *.iml
 .env
 *.txt
+dist
+build
+*.spec
+
 
