@@ -147,6 +147,7 @@ def main():
     root.resizable(False, False)
     root.columnconfigure(0, weight=1)
     root.columnconfigure(1, weight=1)
+    root.iconbitmap("fossa-icon.ico")
 
     root.tk.call("source", "Azure-ttk-theme-2.1.0/azure.tcl")
     if dark_mode.get():
