@@ -17,7 +17,8 @@ root = tkinter.Tk()
 
 file_path = ""
 file_name = tkinter.StringVar()
-pastebin_link = tkinter.StringVar()
+pastebin_label_text = tkinter.StringVar()
+pastebin_text = ""
 ban_reason = tkinter.StringVar()
 test_mode = tkinter.BooleanVar(root, value=config["settings"]["testmode"])
 dark_mode = tkinter.BooleanVar(root, value=config["settings"]["darkmode"])
@@ -123,24 +124,28 @@ def open_file():
 
 
 def generate_link():
+    global pastebin_text
     if file_path != "":
         filesay = csv_parser.parse(file_path, ban_reason.get())
         if test_mode.get():
-            pastebin_link.set(TEST_MODE_MESSAGE)
-            print(filesay)
+
+            pastebin_text = filesay
+            pastebin_label_text.set(TEST_MODE_MESSAGE)
         else:
             response = pastebin.paste(filesay, dev_key.get())
             if response.status_code == 200:
                 if prefix.get():
-                    pastebin_link.set("!filesay " + response.text)
-            else:
-                pastebin_link.set(response.text)
+                    pastebin_text = "!filesay " + response.text
+
+            pastebin_text = response.text
+
+            pastebin_label_text.set(pastebin_text)
 
 
 def copy_link():
-    if pastebin_link.get() != "" and pastebin_link.get() != TEST_MODE_MESSAGE:
+    if pastebin_text != "":
         root.clipboard_clear()
-        root.clipboard_append(pastebin_link.get())
+        root.clipboard_append(pastebin_text)
 
 
 def main():
@@ -197,7 +202,7 @@ def main():
     link_label = ttk.Label(lower_frame, text="Link:", width=10)
     link_label.grid(row=0, column=0, padx=5, pady=5)
 
-    link_label2 = ttk.Label(lower_frame, textvariable=pastebin_link, width=50)
+    link_label2 = ttk.Label(lower_frame, textvariable=pastebin_label_text, width=50)
     link_label2.grid(row=0, column=1)
 
     copy_btn = ttk.Button(lower_frame, text="Copy", command=copy_link)

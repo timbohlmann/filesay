@@ -9,6 +9,5 @@ def paste(paste_string, dev_key):
         "api_paste_expire_date": "1D"
     }
     response = requests.post(url, values)
-    print(response.text)
     return response
 
